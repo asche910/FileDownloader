@@ -1,4 +1,4 @@
-package util;
+package main;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static main.Main.atomicInteger;
 import static util.PrintUtils.println;
 
 public class DownloadTask implements Runnable{
@@ -20,8 +21,6 @@ public class DownloadTask implements Runnable{
     private int threadId;
     private int startIndex;
     private int endIndex;
-
-    private static AtomicInteger atomicInteger;
 
     public DownloadTask(String sourceUrl) {
         this.sourceUrl = sourceUrl;
@@ -60,17 +59,8 @@ public class DownloadTask implements Runnable{
     }
 
 
-    public static AtomicInteger getAtomicInteger() {
-        return atomicInteger;
-    }
-
-    public static void setAtomicInteger(AtomicInteger atomicInteger) {
-        DownloadTask.atomicInteger = atomicInteger;
-    }
-
     @Override
     public void run() {
-        parseUrl();
 
         try {
             URL url = new URL(sourceUrl);
@@ -80,6 +70,8 @@ public class DownloadTask implements Runnable{
             connection.setReadTimeout(10_000);
 
             connection.setRequestProperty("Range", String.format("bytes=%d-%d", startIndex, endIndex));
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0");
+
 
             println("Code ------> " + connection.getResponseCode());
 
@@ -105,21 +97,4 @@ public class DownloadTask implements Runnable{
         atomicInteger.decrementAndGet();
     }
 
-    /**
-     * 从sourceUrl中解析出fileName
-     */
-    private void parseUrl(){
-        String[] strs = sourceUrl.split("/");
-        String name = strs[strs.length - 1];
-        int index;
-        if ((index = name.indexOf('?')) != -1)
-            name = name.substring(0, index);
-        println("Get fileName: " + name);
-
-        if (name == null || name.equals("")){
-            fileName = "file";
-        }else{
-            fileName = name;
-        }
-    }
 }
