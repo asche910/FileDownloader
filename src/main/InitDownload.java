@@ -2,8 +2,9 @@ package main;
 
 import util.HttpUtils;
 
-import static main.Main.THREAD_SIZE;
-import static main.Main.atomicInteger;
+import java.io.File;
+
+import static main.Main.*;
 import static util.PrintUtils.println;
 
 public class InitDownload {
@@ -18,6 +19,7 @@ public class InitDownload {
 
     public void start(){
         parseUrl();
+        createCache();
 
         long start = System.currentTimeMillis();
         try {
@@ -52,13 +54,14 @@ public class InitDownload {
                 e.printStackTrace();
             }
         }
+        deleteCache();
     }
 
     /**
      * 从sourceUrl中解析出fileName
      */
     private void parseUrl(){
-        String name = sourceUrl.substring(sourceUrl.lastIndexOf('/'));
+        String name = sourceUrl.substring(sourceUrl.lastIndexOf('/') + 1);
         int index;
         if ((index = name.indexOf('?')) != -1)
             name = name.substring(0, index);
@@ -68,6 +71,26 @@ public class InitDownload {
             fileName = "file";
         }else{
             fileName = name;
+        }
+    }
+
+    private void createCache(){
+        File dir = new File(LOGO);
+        if (!dir.exists()){
+            dir.mkdir();
+        }
+    }
+
+    private void deleteCache(){
+        File dir = new File(LOGO);
+        if (dir.exists() && dir.isDirectory()){
+            File[] files = dir.listFiles();
+            for(File file: files){
+                if (file.isFile()){
+                    file.delete();
+                }
+            }
+            dir.delete();
         }
     }
 }

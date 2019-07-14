@@ -1,14 +1,12 @@
 package main;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static main.Main.LOGO;
 import static main.Main.atomicInteger;
 import static util.PrintUtils.println;
 
@@ -63,6 +61,15 @@ public class DownloadTask implements Runnable{
     public void run() {
 
         try {
+            File threadFile = new File(String.format("%s%ctemp_%d", LOGO, File.separatorChar, threadId));
+            RandomAccessFile threadRandomFile = new RandomAccessFile(threadFile, "rwd");
+
+            String line = threadRandomFile.readLine();
+            if (line != null && !line.equals("")){
+                int index = Integer.parseInt(line);
+                startIndex = index;
+            }
+
             URL url = new URL(sourceUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -81,19 +88,25 @@ public class DownloadTask implements Runnable{
             RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
             randomAccessFile.seek(startIndex);
 
+
+
             byte [] bytes = new byte[1024];
-            int n;
-            while ((n = inputStream.read(bytes)) != -1){
-                randomAccessFile.write(bytes, 0, n);
+            int len, total = 0;
+            while ((len = inputStream.read(bytes)) != -1){
+                randomAccessFile.write(bytes, 0, len);
+                total += len;
+
+                threadRandomFile.seek(0);
+                threadRandomFile.write((startIndex + total + "").getBytes());
             }
             inputStream.close();
-
+            randomAccessFile.close();
+            threadRandomFile.close();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         atomicInteger.decrementAndGet();
     }
 
