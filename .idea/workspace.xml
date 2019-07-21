@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e46b6840-d727-4c3d-be9f-29a59398f0d3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/commons-cli-1.4.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util/DownloadListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/util/ProgressBar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FileDownloader.iml" beforeDir="false" afterPath="$PROJECT_DIR$/FileDownloader.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cloudmusicsetup2.5.3.197682.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileDownloader/main/DownloadTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/FileDownloader/main/DownloadTask.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileDownloader/main/InitDownload.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/FileDownloader/main/InitDownload.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileDownloader/main/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/FileDownloader/main/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/FileDownloader/util/HttpUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/FileDownloader/util/HttpUtils.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/DownloadTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/DownloadTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/InitDownload.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/InitDownload.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/util/HttpUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/util/HttpUtils.java" afterDir="false" />
-    </list>
+    <list default="true" id="e46b6840-d727-4c3d-be9f-29a59398f0d3" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,8 +20,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="58" lean-forward="true" selection-start-line="58" selection-end-line="58" />
+            <state relative-caret-position="494">
+              <caret line="26" column="53" selection-start-line="26" selection-start-column="39" selection-end-line="26" selection-end-column="53" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -224,12 +209,12 @@
       <workItem from="1562977899215" duration="31924000" />
       <workItem from="1563450004532" duration="1001000" />
       <workItem from="1563456400715" duration="619000" />
-      <workItem from="1563667594414" duration="11298000" />
+      <workItem from="1563667594414" duration="11580000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51797000" />
+    <option name="totallyTimeSpent" value="52079000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -421,8 +406,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="58" lean-forward="true" selection-start-line="58" selection-end-line="58" />
+        <state relative-caret-position="494">
+          <caret line="26" column="53" selection-start-line="26" selection-start-column="39" selection-end-line="26" selection-end-column="53" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
