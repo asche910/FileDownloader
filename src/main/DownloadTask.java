@@ -1,10 +1,13 @@
 package main;
 
-import java.io.*;
+import util.HttpUtils;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 import static main.Main.*;
 import static util.PrintUtils.println;
@@ -59,7 +62,7 @@ public class DownloadTask implements Runnable{
     @Override
     public void run() {
         try {
-            File threadFile = new File(String.format("%s%ctemp_%d", LOGO, File.separatorChar, threadId));
+            File threadFile = new File(String.format("%s%ctemp_%d", NAME, File.separatorChar, threadId));
             RandomAccessFile threadRandomFile = new RandomAccessFile(threadFile, "rwd");
 
             String line = threadRandomFile.readLine();
@@ -80,9 +83,12 @@ public class DownloadTask implements Runnable{
             connection.setConnectTimeout(10_000);
             connection.setReadTimeout(10_000);
 
-            connection.setRequestProperty("Range", String.format("bytes=%d-%d", startIndex, endIndex));
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0");
+            Map<String, String> headerMap = HttpUtils.getHeaderMap();
 
+            for(String key: headerMap.keySet()){
+                connection.setRequestProperty(key, headerMap.get(key));
+            }
+            connection.setRequestProperty("Range", String.format("bytes=%d-%d", startIndex, endIndex));
 
             // println("Code ------> " + connection.getResponseCode());
 
@@ -92,7 +98,6 @@ public class DownloadTask implements Runnable{
                 InputStream inputStream = connection.getInputStream();
                 RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
                 randomAccessFile.seek(startIndex);
-
 
                 byte [] bytes = new byte[1024];
                 int len, total = 0;
@@ -112,8 +117,8 @@ public class DownloadTask implements Runnable{
             }
 
         } catch (Exception e) {
-            // e.printStackTrace();
-            println("连接失败！");
+             // e.printStackTrace();
+            println(String.format("Thread %d 连接失败！", threadId));
         }
         atomicInteger.decrementAndGet();
     }

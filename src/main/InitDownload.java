@@ -1,6 +1,5 @@
 package main;
 
-import util.DownloadListener;
 import util.HttpUtils;
 import util.ProgressBar;
 
@@ -15,13 +14,25 @@ public class InitDownload {
     private String outputDir; // 默认运行目录
     private String fileName;
 
+    // 是否使用断点续传
+    private boolean disableCache;
+
     public InitDownload(String sourceUrl) {
         this.sourceUrl = sourceUrl;
+    }
+
+    public void setDisableCache(boolean disableCache) {
+        this.disableCache = disableCache;
     }
 
     public void start(){
         parseUrl();
         createCache();
+        if (disableCache){
+            deleteCache();
+        }
+        createCache();
+
 
         long start = System.currentTimeMillis();
         try {
@@ -93,14 +104,14 @@ public class InitDownload {
     }
 
     private void createCache(){
-        File dir = new File(LOGO);
+        File dir = new File(NAME);
         if (!dir.exists()){
             dir.mkdir();
         }
     }
 
     private void deleteCache(){
-        File dir = new File(LOGO);
+        File dir = new File(NAME);
         if (dir.exists() && dir.isDirectory()){
             File[] files = dir.listFiles();
             for(File file: files){
