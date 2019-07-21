@@ -1,6 +1,8 @@
 package main;
 
+import util.DownloadListener;
 import util.HttpUtils;
+import util.ProgressBar;
 
 import java.io.File;
 
@@ -23,16 +25,34 @@ public class InitDownload {
 
         long start = System.currentTimeMillis();
         try {
-            int length = HttpUtils.getResponseSize(sourceUrl);
-            int single = length / THREAD_SIZE;
+            FILE_SIZE = HttpUtils.getResponseSize(sourceUrl);
+            long single = FILE_SIZE / THREAD_SIZE;
+
+            printSize(FILE_SIZE);
+
+            new Thread(() -> {
+                ProgressBar progressBar = new ProgressBar();
+                try {
+                    progressBar.setDownloadListener(() -> {
+                        long end = System.currentTimeMillis();
+                        println(String.format("\nTotal time: %dS", (end - start) / 1000));
+
+                        deleteCache();
+                    });
+                    progressBar.initProgress();
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
             for(int i = 0; i < THREAD_SIZE; i++){
-                int startIndex = i * single;
-                int endIndex = (i + 1) * single - 1;
+                long startIndex = i * single;
+                long endIndex = (i + 1) * single - 1;
                 if (i == THREAD_SIZE - 1) {
-                    endIndex = length - 1;
+                    endIndex = FILE_SIZE - 1;
                 }
-                println(startIndex + "---" + endIndex);
+                // println(startIndex + "---" + endIndex);
 
                 DownloadTask task = new DownloadTask(sourceUrl, fileName, i, startIndex, endIndex);
                 Thread thread = new Thread(task, "Task-" + i);
@@ -41,20 +61,6 @@ public class InitDownload {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        while (true){
-            if (atomicInteger.get() == 0){
-                long end = System.currentTimeMillis();
-                println("Total time ------> " + (end - start));
-                break;
-            }
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        deleteCache();
     }
 
     /**
@@ -65,12 +71,24 @@ public class InitDownload {
         int index;
         if ((index = name.indexOf('?')) != -1)
             name = name.substring(0, index);
-        println("Get fileName: " + name);
+        println("FileName: " + name);
 
         if (name.equals("")){
             fileName = "file";
         }else{
             fileName = name;
+        }
+    }
+
+    private void printSize(long size){
+        if (size < 1024){
+            println(String.format("File Size: %dB", size));
+        }else if(size < 1_048_576){
+            println(String.format("File Size: %.2fK", size / 1024.0));
+        }else if (size < 1_073_741_824){
+            println(String.format("File Size: %.2fM", size / 1024.0 / 1024.0));
+        }else {
+            println(String.format("File Size: %.2fG", size / 1024.0 / 1024.0 / 1024.0));
         }
     }
 
@@ -93,4 +111,5 @@ public class InitDownload {
             dir.delete();
         }
     }
+
 }

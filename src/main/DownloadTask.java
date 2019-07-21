@@ -6,8 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static main.Main.LOGO;
-import static main.Main.atomicInteger;
+import static main.Main.*;
 import static util.PrintUtils.println;
 
 public class DownloadTask implements Runnable{
@@ -17,8 +16,8 @@ public class DownloadTask implements Runnable{
     private String fileName;
 
     private int threadId;
-    private int startIndex;
-    private int endIndex;
+    private long startIndex;
+    private long endIndex;
 
     public DownloadTask(String sourceUrl) {
         this.sourceUrl = sourceUrl;
@@ -31,7 +30,7 @@ public class DownloadTask implements Runnable{
         this.endIndex = endIndex;
     }
 
-    public DownloadTask(String sourceUrl, String fileName, int threadId, int startIndex, int endIndex) {
+    public DownloadTask(String sourceUrl, String fileName, int threadId, long startIndex, long endIndex) {
         this.sourceUrl = sourceUrl;
         this.fileName = fileName;
         this.threadId = threadId;
@@ -59,7 +58,6 @@ public class DownloadTask implements Runnable{
 
     @Override
     public void run() {
-
         try {
             File threadFile = new File(String.format("%s%ctemp_%d", LOGO, File.separatorChar, threadId));
             RandomAccessFile threadRandomFile = new RandomAccessFile(threadFile, "rwd");
@@ -67,7 +65,13 @@ public class DownloadTask implements Runnable{
             String line = threadRandomFile.readLine();
             if (line != null && !line.equals("")){
                 int index = Integer.parseInt(line);
+                sum += index - startIndex;
                 startIndex = index;
+                if (startIndex > endIndex){
+                    atomicInteger.decrementAndGet();
+                    threadRandomFile.close();
+                    return;
+                }
             }
 
             URL url = new URL(sourceUrl);
@@ -80,34 +84,37 @@ public class DownloadTask implements Runnable{
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0");
 
 
-            println("Code ------> " + connection.getResponseCode());
+            // println("Code ------> " + connection.getResponseCode());
 
-            File file = new File(fileName);
+            if (connection.getResponseCode() == 206){
+                File file = new File(fileName);
 
-            InputStream inputStream = connection.getInputStream();
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
-            randomAccessFile.seek(startIndex);
+                InputStream inputStream = connection.getInputStream();
+                RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rwd");
+                randomAccessFile.seek(startIndex);
 
 
+                byte [] bytes = new byte[1024];
+                int len, total = 0;
+                while ((len = inputStream.read(bytes)) != -1){
+                    randomAccessFile.write(bytes, 0, len);
+                    total += len;
+                    sum += len;
 
-            byte [] bytes = new byte[1024];
-            int len, total = 0;
-            while ((len = inputStream.read(bytes)) != -1){
-                randomAccessFile.write(bytes, 0, len);
-                total += len;
-
-                threadRandomFile.seek(0);
-                threadRandomFile.write((startIndex + total + "").getBytes());
+                    threadRandomFile.seek(0);
+                    threadRandomFile.write((startIndex + total + "").getBytes());
+                }
+                inputStream.close();
+                randomAccessFile.close();
+                threadRandomFile.close();
+            }else {
+                println(String.format("Thread %d 连接失败！", threadId));
             }
-            inputStream.close();
-            randomAccessFile.close();
-            threadRandomFile.close();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        } catch (Exception e) {
+            // e.printStackTrace();
+            println("连接失败！");
         }
         atomicInteger.decrementAndGet();
     }
-
 }
